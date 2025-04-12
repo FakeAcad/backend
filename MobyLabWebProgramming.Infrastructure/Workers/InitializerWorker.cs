@@ -39,7 +39,7 @@ public class InitializerWorker(ILogger<InitializerWorker> logger, IServiceProvid
                 {
                     Email = "admin@default.com",
                     Name = "Admin",
-                    Role = UserRoleEnum.Admin,
+                    Role = UserRoleEnum.Moderator,
                     Password = PasswordUtils.HashPassword("default")
                 }, cancellationToken: cancellationToken);
             }

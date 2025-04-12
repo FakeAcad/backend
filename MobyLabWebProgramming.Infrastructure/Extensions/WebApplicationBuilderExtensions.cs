@@ -184,9 +184,11 @@ public static class WebApplicationBuilderExtensions
         builder.Services
             .AddScoped<IUserService, UserService>()
             .AddScoped<ILoginService, LoginService>()
-            .AddScoped<IFileRepository, FileRepository>()
-            .AddScoped<IUserFileService, UserFileService>()
-            .AddScoped<IMailService, MailService>();
+            .AddScoped<IMailService, MailService>()
+            .AddTransient<IArticleService, ArticleService>()
+            .AddTransient<IComplaintService, ComplaintService>()
+            .AddTransient<IProfessorService, ProfessorService>()
+            .AddTransient<IUniversityService, UniversityService>();
 
         return builder;
     }
