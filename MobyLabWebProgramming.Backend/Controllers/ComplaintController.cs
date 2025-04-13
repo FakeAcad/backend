@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MobyLabWebProgramming.Core.DataTransferObjects;
 using MobyLabWebProgramming.Core.Handlers;
@@ -7,19 +8,25 @@ using MobyLabWebProgramming.Infrastructure.Services.Interfaces;
 
 namespace MobyLabWebProgramming.Backend.Controllers;
 
-/// <summary>
-/// This is a controller example for CRUD operations on users.
-/// Inject the required services through the constructor.
-/// </summary>
-[ApiController] // This attribute specifies for the framework to add functionality to the controller such as binding multipart/form-data.
-[Route("api/[controller]/[action]")] // The Route attribute prefixes the routes/url paths with template provides as a string, the keywords between [] are used to automatically take the controller and method name.
+[ApiController]
+[Route("api/[controller]/[action]")]
 public class ComplaintController(IComplaintService complaintService) : BaseResponseController {
-    /// <summary>
-    /// This method implements the Read operation (R from CRUD) on a user. 
-    /// </summary>
-    [HttpGet("{id:guid}")] // This attribute will make the controller respond to a HTTP GET request on the route /api/User/GetById/<some_guid>.
-    public async Task<ActionResult<RequestResponse<ComplaintDTO>>> GetById([FromRoute] Guid id) // The FromRoute attribute will bind the id from the route to this parameter.
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<RequestResponse<ComplaintDTO>>> GetById([FromRoute] Guid id)
     {
         return FromServiceResponse(await complaintService.GetComplaint(id));
+    }
+    
+    [HttpGet("{name}")]
+    public async Task<ActionResult<RequestResponse<ComplaintDTO>>> GetById([FromRoute] string name)
+    {
+        return FromServiceResponse(await complaintService.GetComplaintByName(name));
+    }
+    
+    [Authorize]
+    [HttpPost]
+    public async Task<ActionResult<RequestResponse>> Add([FromBody] ComplaintAddDTO complaint)
+    {
+        return FromServiceResponse(await complaintService.AddComplaint(complaint));
     }
 }

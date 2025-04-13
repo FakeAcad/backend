@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MobyLabWebProgramming.Core.DataTransferObjects;
 using MobyLabWebProgramming.Core.Entities;
@@ -17,15 +18,28 @@ public class ProfessorController(IProfessorService professorService) : BaseRespo
         return FromServiceResponse(await professorService.GetProfessor(id));
     }
     
-    [HttpGet("{article}")] // This attribute will make the controller respond to a HTTP GET request on the route /api/User/GetById/<some_guid>.
-    public async Task<ActionResult<RequestResponse<ICollection<Professor>>>> GetByArticle([FromRoute] string article) // The FromRoute attribute will bind the id from the route to this parameter.
+    [HttpGet("{firstName},{lastName}")]
+    public async Task<ActionResult<RequestResponse<ProfessorDTO>>> GetByName([FromRoute] string firstName, string lastName)
+    {
+        return FromServiceResponse(await professorService.GetProfessorByName(firstName, lastName));
+    }
+    
+    [HttpGet("{article}")]
+    public async Task<ActionResult<RequestResponse<ICollection<Professor>>>> GetByArticle([FromRoute] string article)
     {
         return FromServiceResponse(await professorService.GetProfessorsByArticle(article));
     }
     
-    [HttpGet("{univ}")] // This attribute will make the controller respond to a HTTP GET request on the route /api/User/GetById/<some_guid>.
-    public async Task<ActionResult<RequestResponse<ICollection<Professor>>>> GetByUniv([FromRoute] string univ) // The FromRoute attribute will bind the id from the route to this parameter.
+    [HttpGet("{univ}")]
+    public async Task<ActionResult<RequestResponse<ICollection<Professor>>>> GetByUniv([FromRoute] string univ)
     {
         return FromServiceResponse(await professorService.GetProfessorsByUniversity(univ));
+    }
+    
+    [Authorize]
+    [HttpPost]
+    public async Task<ActionResult<RequestResponse>> Add([FromBody] ProfessorAddDTO professor)
+    {
+        return FromServiceResponse(await professorService.AddProfessor(professor));
     }
 }

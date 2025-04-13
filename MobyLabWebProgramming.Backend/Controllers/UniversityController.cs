@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MobyLabWebProgramming.Core.DataTransferObjects;
 using MobyLabWebProgramming.Core.Entities;
@@ -17,15 +18,28 @@ public class UniversityController(IUniversityService universityService) : BaseRe
         return FromServiceResponse(await universityService.GetUniversity(id));
     }
     
-    [HttpGet("{article}")] // This attribute will make the controller respond to a HTTP GET request on the route /api/User/GetById/<some_guid>.
-    public async Task<ActionResult<RequestResponse<ICollection<University>>>> GetByArticle([FromRoute] string article) // The FromRoute attribute will bind the id from the route to this parameter.
+    [HttpGet("{name}")]
+    public async Task<ActionResult<RequestResponse<UniversityDTO>>> GetByName([FromRoute] string name)
+    {
+        return FromServiceResponse(await universityService.GetUniversityByName(name));
+    }
+    
+    [HttpGet("{article}")]
+    public async Task<ActionResult<RequestResponse<ICollection<University>>>> GetByArticle([FromRoute] string article)
     {
         return FromServiceResponse(await universityService.GetUniversitiesByArticle(article));
     }
     
-    [HttpGet("{firstName},{lastName}")] // This attribute will make the controller respond to a HTTP GET request on the route /api/User/GetById/<some_guid>.
-    public async Task<ActionResult<RequestResponse<ICollection<University>>>> GetByProf([FromRoute] string firstName, string lastName) // The FromRoute attribute will bind the id from the route to this parameter.
+    [HttpGet("{firstName},{lastName}")]
+    public async Task<ActionResult<RequestResponse<ICollection<University>>>> GetByProf([FromRoute] string firstName, string lastName)
     {
         return FromServiceResponse(await universityService.GetUniversitiesByProfessor(firstName, lastName));
+    }
+    
+    [Authorize]
+    [HttpPost]
+    public async Task<ActionResult<RequestResponse>> Add([FromBody] UniversityAddDTO university)
+    {
+        return FromServiceResponse(await universityService.AddUniversity(university));
     }
 }

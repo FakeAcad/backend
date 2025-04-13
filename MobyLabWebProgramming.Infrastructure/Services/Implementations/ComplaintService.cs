@@ -1,4 +1,6 @@
+using System.Net;
 using MobyLabWebProgramming.Core.DataTransferObjects;
+using MobyLabWebProgramming.Core.Entities;
 using MobyLabWebProgramming.Core.Errors;
 using MobyLabWebProgramming.Core.Responses;
 using MobyLabWebProgramming.Core.Specifications;
@@ -13,10 +15,46 @@ public class ComplaintService(IRepository<WebAppDatabaseContext> repository) : I
     public async Task<ServiceResponse<ComplaintDTO>> GetComplaint(Guid id,
         CancellationToken cancellationToken = default)
     {
-        var result = await repository.GetAsync(new ComplaintProjectionSpec(id), cancellationToken); // Get a user using a specification on the repository.
+        var result = await repository.GetAsync(new ComplaintProjectionSpec(id), cancellationToken);
 
         return result != null ? 
             ServiceResponse.ForSuccess(result) : 
-            ServiceResponse.FromError<ComplaintDTO>(CommonErrors.ComplaintNotFound); // Pack the result or error into a ServiceResponse.
+            ServiceResponse.FromError<ComplaintDTO>(CommonErrors.ComplaintNotFound);
+    }
+    
+    public async Task<ServiceResponse<ComplaintDTO>> GetComplaintByName(string name,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await repository.GetAsync(new ComplaintProjectionSpec(name), cancellationToken);
+
+        return result != null ? 
+            ServiceResponse.ForSuccess(result) : 
+            ServiceResponse.FromError<ComplaintDTO>(CommonErrors.ComplaintNotFound);
+    }
+    
+    public async Task<ServiceResponse> AddComplaint(ComplaintAddDTO complaint,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await repository.GetAsync(new ComplaintSpec(complaint.Name), cancellationToken);
+        if (result != null)
+        {
+            return ServiceResponse.FromError(new(HttpStatusCode.Conflict, "The complaint already exists!", ErrorCodes.ComplaintAlreadyExists));
+        }
+        
+        var a = await repository.GetAsync(new ArticleSpec(complaint.ArticleId), cancellationToken);
+        if (a == null)
+        { 
+            return ServiceResponse.FromError(CommonErrors.ArticleNotFound);
+        }
+
+        await repository.AddAsync(new Complaint()
+        {
+            ComplaintType = complaint.ComplaintType,
+            Severity = complaint.Severity,
+            Name = complaint.Name,
+            ArticleId = complaint.ArticleId,
+        }, cancellationToken);
+
+        return ServiceResponse.ForSuccess();
     }
 }

@@ -14,6 +14,7 @@ public class ArticleConfigurations  : IEntityTypeConfiguration<Article>
         builder.Property(e => e.Title)
             .HasMaxLength(255) // This specifies the maximum length for varchar type in the database.
             .IsRequired();
+        builder.HasAlternateKey(e => e.Title); // Here it is specified that the property Email is a unique key.
         builder.Property(e => e.Description)
             .HasMaxLength(1024)
             .IsRequired();
@@ -29,9 +30,6 @@ public class ArticleConfigurations  : IEntityTypeConfiguration<Article>
             .WithOne(e => e.Article) // Aici se furnizează maparea inversă pentru relația de unu-la-mulți.
             .HasForeignKey<Article>(e => e.ComplaintId) // Aici este specificată coloana cheii străine.
             .HasPrincipalKey<Complaint>(e => e.ArticleId) // Aici se specifică cheia referențiată în tabela referențiată.
-            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade); // Aici se specifică comportamentul de ștergere atunci când entitatea referențiată este eliminată.
     }
-    
-    
 }

@@ -17,7 +17,7 @@ public interface IArticleService
     
     public Task<ServiceResponse<ICollection<Article>>> GetArticlesByProfessor(string firstName, string lastName, CancellationToken cancellationToken = default);
     
-    // public Task<ServiceResponse> AddArticle(ArticleAddDTO article, UserDTO requestingUser, CancellationToken cancellationToken = default);
-    //
-    // public Task<ServiceResponse> DeleteArticle(Guid id, UserDTO? requestingUser = null, CancellationToken cancellationToken = default);
+    public Task<ServiceResponse> AddArticle(ArticleAddDTO article, UserDTO requestingUser, CancellationToken cancellationToken = default);
+    
+    public Task<ServiceResponse> DeleteArticle(Guid id, UserDTO requestingUser, CancellationToken cancellationToken = default);
 }

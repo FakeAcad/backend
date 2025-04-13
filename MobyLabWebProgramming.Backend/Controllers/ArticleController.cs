@@ -1,15 +1,17 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MobyLabWebProgramming.Core.DataTransferObjects;
 using MobyLabWebProgramming.Core.Entities;
 using MobyLabWebProgramming.Core.Handlers;
 using MobyLabWebProgramming.Core.Responses;
+using MobyLabWebProgramming.Infrastructure.Authorization;
 using MobyLabWebProgramming.Infrastructure.Services.Interfaces;
 
 namespace MobyLabWebProgramming.Backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-public class ArticleController(IArticleService articleService) : BaseResponseController {
+public class ArticleController(IUserService userService, IArticleService articleService) : AuthorizedController(userService) {
     
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<RequestResponse<ArticleDTO>>> GetById([FromRoute] Guid id)
@@ -17,21 +19,42 @@ public class ArticleController(IArticleService articleService) : BaseResponseCon
         return FromServiceResponse(await articleService.GetArticle(id));
     }
     
-    [HttpGet("{title}")] // This attribute will make the controller respond to a HTTP GET request on the route /api/User/GetById/<some_guid>.
-    public async Task<ActionResult<RequestResponse<ArticleDTO>>> GetByTitle([FromRoute] string title) // The FromRoute attribute will bind the id from the route to this parameter.
+    [HttpGet("{title}")]
+    public async Task<ActionResult<RequestResponse<ArticleDTO>>> GetByTitle([FromRoute] string title)
     {
         return FromServiceResponse(await articleService.GetArticleByTitle(title));
     }
     
-    [HttpGet("{univ}")] // This attribute will make the controller respond to a HTTP GET request on the route /api/User/GetById/<some_guid>.
-    public async Task<ActionResult<RequestResponse<ICollection<Article>>>> GetByUniv([FromRoute] string univ) // The FromRoute attribute will bind the id from the route to this parameter.
+    [HttpGet("{univ}")]
+    public async Task<ActionResult<RequestResponse<ICollection<Article>>>> GetByUniv([FromRoute] string univ)
     {
         return FromServiceResponse(await articleService.GetArticlesByUniversity(univ));
     }
     
-    [HttpGet("{firstName},{lastName}")] // This attribute will make the controller respond to a HTTP GET request on the route /api/User/GetById/<some_guid>.
-    public async Task<ActionResult<RequestResponse<ICollection<Article>>>> GetByProf([FromRoute] string firstName, string lastName) // The FromRoute attribute will bind the id from the route to this parameter.
+    [HttpGet("{firstName},{lastName}")]
+    public async Task<ActionResult<RequestResponse<ICollection<Article>>>> GetByProf([FromRoute] string firstName, string lastName)
     {
         return FromServiceResponse(await articleService.GetArticlesByProfessor(firstName, lastName));
+    }
+    
+    [Authorize]
+    [HttpPost]
+    public async Task<ActionResult<RequestResponse>> Add([FromBody] ArticleAddDTO article)
+    {
+        var currentUser = await GetCurrentUser();
+        
+        return currentUser.Result != null ?
+            FromServiceResponse(await articleService.AddArticle(article, currentUser.Result)) :
+            ErrorMessageResult(currentUser.Error);
+    }
+    
+    [Authorize]
+    [HttpDelete("{id:guid}")]
+    public async Task<ActionResult<RequestResponse>> Delete([FromRoute] Guid id)
+    {
+        var currentUser = await GetCurrentUser();
+
+        return currentUser.Result != null ? FromServiceResponse(await articleService.DeleteArticle(id, currentUser.Result)) :
+            ErrorMessageResult(currentUser.Error);
     }
 }

@@ -16,6 +16,7 @@ public class ComplaintConfigurations  : IEntityTypeConfiguration<Complaint>
         builder.Property(e => e.Name)
             .HasMaxLength(255) // This specifies the maximum length for varchar type in the database.
             .IsRequired();
+        builder.HasAlternateKey(e => e.Name); // Here it is specified that the property Email is a unique key.
         builder.Property(e => e.ComplaintType)
             .HasConversion(new EnumToStringConverter<ComplaintType>())
             .HasMaxLength(255)
