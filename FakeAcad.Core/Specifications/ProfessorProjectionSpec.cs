@@ -42,4 +42,16 @@ public class ProfessorProjectionSpec : Specification<Professor, ProfessorDTO>
         Query.Where(e => EF.Functions.ILike(e.FirstName, searchExpr1) && EF.Functions.ILike(e.LastName, searchExpr2)); // This is an example on how database specific expressions can be used via C# expressions.
         // Note that this will be translated to the database something like "where user.Name ilike '%str%'".
     }
+
+    public static ProfessorProjectionSpec byUniversity(Guid universityId) {
+        var spec = new ProfessorProjectionSpec(false);
+        spec.Query.Where(e => e.Universities.Any(u => u.Id == universityId));
+        return spec;
+    }
+
+    public static ProfessorProjectionSpec byArticle(Guid articleId) {
+        var spec = new ProfessorProjectionSpec(false);
+        spec.Query.Where(e => e.Articles.Any(a => a.Id == articleId));
+        return spec;
+    }
 }

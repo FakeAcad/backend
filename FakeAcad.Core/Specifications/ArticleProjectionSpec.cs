@@ -2,6 +2,7 @@ using Ardalis.Specification;
 using Microsoft.EntityFrameworkCore;
 using FakeAcad.Core.DataTransferObjects;
 using FakeAcad.Core.Entities;
+using Microsoft.VisualBasic;
 
 namespace FakeAcad.Core.Specifications;
 
@@ -37,5 +38,17 @@ public class ArticleProjectionSpec : Specification<Article, ArticleDTO>
 
         Query.Where(e => EF.Functions.ILike(e.Title, searchExpr)); // This is an example on how database specific expressions can be used via C# expressions.
         // Note that this will be translated to the database something like "where user.Name ilike '%str%'".
+    }
+
+    public static ArticleProjectionSpec byUniversity(Guid universityId) {
+        var spec = new ArticleProjectionSpec(false);
+        spec.Query.Where(e => e.Universities.Any(u => u.Id == universityId));
+        return spec;
+    }
+
+    public static ArticleProjectionSpec byProfessor(Guid professorId) {
+        var spec = new ArticleProjectionSpec(false);
+        spec.Query.Where(e => e.Professors.Any(p => p.Id == professorId));
+        return spec;
     }
 }
