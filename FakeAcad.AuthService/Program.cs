@@ -3,7 +3,6 @@ using FakeAcad.Infrastructure.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddCorsConfiguration()
-    .AddRepository()
     .AddServices()
     .UseLogger()
     .AddApi();

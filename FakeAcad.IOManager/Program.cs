@@ -2,9 +2,7 @@ using FakeAcad.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddCorsConfiguration()
-    .AddRepository()
-    .AddAuthorizationWithSwagger("FakeAcad Web App")
+builder.AddRepository()
     .UseLogger()
     .AddWorkers()
     .AddApi();

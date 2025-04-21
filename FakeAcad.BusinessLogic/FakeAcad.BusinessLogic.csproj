@@ -17,4 +17,8 @@
     <ProjectReference Include="..\FakeAcad.Infrastructure\FakeAcad.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FakeAcad.Infrastructure\FakeAcad.Core.csproj" />
+  </ItemGroup>
+
 </Project>

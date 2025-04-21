@@ -5,7 +5,6 @@
 /// </summary>
 public enum UserRoleEnum
 {
-    Admin,
-    Personnel,
+    Moderator,
     Client
 }

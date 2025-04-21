@@ -6,9 +6,9 @@ namespace FakeAcad.Infrastructure.Database;
 /// <summary>
 /// This is the database context used to connect with the database and links the ORM, Entity Framework, with it.
 /// </summary>
-public sealed class FakeAcadDbContext : DbContext
+public sealed class WebAppDatabaseContext : DbContext
 {
-    public FakeAcadDbContext(DbContextOptions<FakeAcadDbContext> options, bool migrate = true) : base(options)
+    public WebAppDatabaseContext(DbContextOptions<WebAppDatabaseContext> options, bool migrate = true) : base(options)
     {
         if (migrate)
         {

@@ -32,11 +32,11 @@ public static class WebApplicationBuilderExtensions
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true); // This is used to avoid some errors with the timezone when working with timestamps.
 
-        builder.Services.AddDbContext<FakeAcadDbContext>(options =>
+        builder.Services.AddDbContext<WebAppDatabaseContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("WebAppDatabase"), // This gets the connection string from ConnectionStrings.WebAppDatabase in appsettings.json.
                 o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery)
                     .CommandTimeout((int)TimeSpan.FromMinutes(15).TotalSeconds)));
-        builder.Services.AddScoped<IRepository<FakeAcadDbContext>, Repository<FakeAcadDbContext>>();
+        builder.Services.AddScoped<IRepository<WebAppDatabaseContext>, Repository<WebAppDatabaseContext>>();
 
         return builder;
     }
@@ -179,14 +179,15 @@ public static class WebApplicationBuilderExtensions
     public static WebApplicationBuilder AddServices(this WebApplicationBuilder builder)
     {
         builder.Services.Configure<JwtConfiguration>(builder.Configuration.GetSection(nameof(JwtConfiguration)));
-        builder.Services.Configure<FileStorageConfiguration>(builder.Configuration.GetSection(nameof(FileStorageConfiguration)));
         builder.Services.Configure<MailConfiguration>(builder.Configuration.GetSection(nameof(MailConfiguration)));
         builder.Services
             .AddScoped<IUserService, UserService>()
             .AddScoped<ILoginService, LoginService>()
-            .AddScoped<IFileRepository, FileRepository>()
-            .AddScoped<IUserFileService, UserFileService>()
-            .AddScoped<IMailService, MailService>();
+            .AddScoped<IMailService, MailService>()
+            .AddTransient<IArticleService, ArticleService>()
+            .AddTransient<IComplaintService, ComplaintService>()
+            .AddTransient<IProfessorService, ProfessorService>()
+            .AddTransient<IUniversityService, UniversityService>();
 
         return builder;
     }

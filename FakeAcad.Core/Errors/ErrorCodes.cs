@@ -17,5 +17,9 @@ public enum ErrorCodes
     CannotAdd,
     CannotUpdate,
     CannotDelete,
-    MailSendFailed
+    MailSendFailed,
+    ArticleAlreadyExists,
+    ComplaintAlreadyExists,
+    ProfessorAlreadyExists,
+    UniversityAlreadyExists,
 }

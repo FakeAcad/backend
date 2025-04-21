@@ -1,0 +1,13 @@
+using FakeAcad.Core.Enums;
+
+namespace FakeAcad.Core.DataTransferObjects;
+
+public class ComplaintDTO
+{
+    public Guid Id { get; set; }
+    public ComplaintType ComplaintType { get; set; }
+    public Severity Severity { get; set; }
+    public string Name { get; set; } = null!;
+    
+    public Guid ArticleId { get; set; }
+}
