@@ -16,7 +16,6 @@ namespace FakeAcad.Backend.Controllers;
 [Route("api/[controller]/[action]")]
 public class UserController(IRepository<WebAppDatabaseContext> repository) : BaseResponseController
 {
-    [Authorize]
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<RequestResponse<UserDTO>>> GetById([FromRoute] Guid id)
     {
@@ -27,7 +26,6 @@ public class UserController(IRepository<WebAppDatabaseContext> repository) : Bas
             ErrorMessageResult<UserDTO>(CommonErrors.UserNotFound);
     }
 
-    [Authorize]
     [HttpGet]
     public async Task<ActionResult<RequestResponse<PagedResponse<UserDTO>>>> GetPage([FromQuery] PaginationSearchQueryParams pagination)
 
@@ -37,7 +35,6 @@ public class UserController(IRepository<WebAppDatabaseContext> repository) : Bas
         return Ok(result);
     }
 
-    [Authorize]
     [HttpPost]
     public async Task<ActionResult<RequestResponse>> Add([FromBody] UserAddDTO user)
     {
@@ -60,7 +57,6 @@ public class UserController(IRepository<WebAppDatabaseContext> repository) : Bas
         return Ok();
     }
 
-    [Authorize]
     [HttpPut]
     public async Task<ActionResult<RequestResponse>> Update([FromBody] UserUpdateDTO user)
     {
@@ -77,7 +73,6 @@ public class UserController(IRepository<WebAppDatabaseContext> repository) : Bas
         return Ok();
     }
 
-    [Authorize]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult<RequestResponse>> Delete([FromRoute] Guid id)
     {

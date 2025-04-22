@@ -34,7 +34,6 @@ public class ComplaintController(IRepository<WebAppDatabaseContext> repository) 
             : ErrorMessageResult<ComplaintDTO>(CommonErrors.ComplaintNotFound);
     }
     
-    [Authorize]
     [HttpPost]
     public async Task<ActionResult<RequestResponse>> Add([FromBody] ComplaintAddDTO complaint)
     {

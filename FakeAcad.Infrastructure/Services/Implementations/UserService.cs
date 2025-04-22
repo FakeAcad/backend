@@ -7,8 +7,7 @@ using FakeAcad.Core.Errors;
 using FakeAcad.Core.Requests;
 using FakeAcad.Core.Responses;
 using FakeAcad.Core.Specifications;
-using FakeAcad.Infrastructure.Database;
-using FakeAcad.Infrastructure.Repositories.Interfaces;
+using FakeAcad.Infrastructure.HttpClients;
 using FakeAcad.Infrastructure.Services.Interfaces;
 
 namespace FakeAcad.Infrastructure.Services.Implementations;
@@ -16,12 +15,12 @@ namespace FakeAcad.Infrastructure.Services.Implementations;
 /// <summary>
 /// Inject the required services through the constructor.
 /// </summary>
-public class UserService(IRepository<WebAppDatabaseContext> repository, ILoginService loginService, IMailService mailService)
+public class UserService(UserHttpClient userHttpClient, ILoginService loginService, IMailService mailService)
     : IUserService
 {
     public async Task<ServiceResponse<UserDTO>> GetUser(Guid id, CancellationToken cancellationToken = default)
     {
-        var result = await repository.GetAsync(new UserProjectionSpec(id), cancellationToken); // Get a user using a specification on the repository.
+        var result = await userHttpClient.GetByIdAsync(id);
 
         return result != null ? 
             ServiceResponse.ForSuccess(result) : 

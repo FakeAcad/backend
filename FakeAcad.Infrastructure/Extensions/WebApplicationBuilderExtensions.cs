@@ -20,6 +20,7 @@ using Serilog;
 using Serilog.Events;
 using FakeAcad.Infrastructure.Repositories.Interfaces;
 using FakeAcad.Infrastructure.Repositories.Implementation;
+using FakeAcad.Infrastructure.HttpClients;
 
 namespace FakeAcad.Infrastructure.Extensions;
 
@@ -52,7 +53,7 @@ public static class WebApplicationBuilderExtensions
         {
             throw new ApplicationException("The CORS configuration needs to be set!");
         }
-        
+
         builder.Services.AddCors(options =>
         {
             options.AddDefaultPolicy(
@@ -76,7 +77,8 @@ public static class WebApplicationBuilderExtensions
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer()
             .AddMvc()
-            .AddJsonOptions(options => {
+            .AddJsonOptions(options =>
+            {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); // Adds a conversion by name of the enums, otherwise numbers representing the enum values are used.
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase; // This converts the public property names of the objects serialized to Camel case.
                 options.JsonSerializerOptions.PropertyNameCaseInsensitive = true; // When deserializing request the properties of the JSON are mapped ignoring the casing.
@@ -112,7 +114,7 @@ public static class WebApplicationBuilderExtensions
                 {
                     throw new ApplicationException("The JWT configuration needs to be set!");
                 }
-                
+
                 var key = Encoding.ASCII.GetBytes(jwtConfiguration.Key); // Use configured key to verify the JWT signature.
                 options.TokenValidationParameters = new()
                 {
@@ -153,7 +155,7 @@ public static class WebApplicationBuilderExtensions
                 Type = ReferenceType.SecurityScheme
             }
         };
-        
+
         builder.Services.AddSwaggerGen(c =>
         {
             c.SupportNonNullableReferenceTypes();
@@ -221,6 +223,37 @@ public static class WebApplicationBuilderExtensions
     public static WebApplicationBuilder AddWorkers(this WebApplicationBuilder builder)
     {
         builder.Services.AddHostedService<InitializerWorker>();
+
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddHttpClients(this WebApplicationBuilder builder, string baseUrl)
+    {
+
+        builder.Services.AddHttpClient<ArticleHttpClient>(client =>
+        {
+            client.BaseAddress = new Uri(baseUrl);
+        });
+
+        builder.Services.AddHttpClient<UserHttpClient>(client =>
+        {
+            client.BaseAddress = new Uri(baseUrl);
+        });
+
+        builder.Services.AddHttpClient<ComplaintHttpClient>(client =>
+        {
+            client.BaseAddress = new Uri(baseUrl);
+        });
+
+        builder.Services.AddHttpClient<ProfessorHttpClient>(client =>
+        {
+            client.BaseAddress = new Uri(baseUrl);
+        });
+
+        builder.Services.AddHttpClient<UniversityHttpClient>(client =>
+        {
+            client.BaseAddress = new Uri(baseUrl);
+        });
 
         return builder;
     }

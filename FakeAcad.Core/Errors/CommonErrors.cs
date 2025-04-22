@@ -21,4 +21,6 @@ public static class CommonErrors
     public static ErrorMessage ComplaintAlreadyExists => new(HttpStatusCode.Conflict, "Complaint already exists!", ErrorCodes.ComplaintAlreadyExists);
     public static ErrorMessage FileNotFound => new(HttpStatusCode.NotFound, "File not found on disk!", ErrorCodes.PhysicalFileNotFound);
     public static ErrorMessage TechnicalSupport => new(HttpStatusCode.InternalServerError, "An unknown error occurred, contact the technical support!", ErrorCodes.TechnicalError);
+
+    public static ErrorMessage FailedToDeserialize => new(HttpStatusCode.BadRequest, "Failed to deserialize the request body!", ErrorCodes.TechnicalError);
 }

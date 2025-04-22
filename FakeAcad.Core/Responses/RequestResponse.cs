@@ -31,6 +31,19 @@ public class RequestResponse<T>
             };
     }
 
+    public static RequestResponse<T> FromErrorAnyType(ErrorMessage? error)
+    {
+        return error != null
+            ? new RequestResponse<T>
+            {
+                ErrorMessage = error
+            }
+            : new()
+            {
+                Response = default
+            };
+    }
+
     public static RequestResponse<string> FromServiceResponse(ServiceResponse serviceResponse)
     {
         return FromError(serviceResponse.Error);

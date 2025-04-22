@@ -13,8 +13,9 @@ namespace FakeAcad.Backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-public class UniversityController(IRepository<WebAppDatabaseContext> repository) : BaseResponseController {
-    
+public class UniversityController(IRepository<WebAppDatabaseContext> repository) : BaseResponseController
+{
+
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<RequestResponse<UniversityDTO>>> GetById([FromRoute] Guid id)
     {
@@ -24,7 +25,7 @@ public class UniversityController(IRepository<WebAppDatabaseContext> repository)
             ? Ok(result)
             : ErrorMessageResult<UniversityDTO>(CommonErrors.UniversityNotFound);
     }
-    
+
     [HttpGet("{name}")]
     public async Task<ActionResult<RequestResponse<UniversityDTO>>> GetByName([FromRoute] string name)
     {
@@ -34,7 +35,7 @@ public class UniversityController(IRepository<WebAppDatabaseContext> repository)
             ? Ok(result)
             : ErrorMessageResult<UniversityDTO>(CommonErrors.UniversityNotFound);
     }
-    
+
     [HttpGet("{article}")]
     public async Task<ActionResult<RequestResponse<ICollection<UniversityDTO>>>> GetByArticle([FromRoute] string article)
     {
@@ -50,7 +51,7 @@ public class UniversityController(IRepository<WebAppDatabaseContext> repository)
             ? Ok(result)
             : ErrorMessageResult<ICollection<UniversityDTO>>(CommonErrors.ArticleNotFound);
     }
-    
+
     [HttpGet("{firstName},{lastName}")]
     public async Task<ActionResult<RequestResponse<ICollection<UniversityDTO>>>> GetByProf([FromRoute] string firstName, string lastName)
     {
@@ -66,8 +67,7 @@ public class UniversityController(IRepository<WebAppDatabaseContext> repository)
             ? Ok(result)
             : ErrorMessageResult<ICollection<UniversityDTO>>(CommonErrors.ProfessorNotFound);
     }
-    
-    [Authorize]
+
     [HttpPost]
     public async Task<ActionResult<RequestResponse>> Add([FromBody] UniversityAddDTO university)
     {
@@ -85,7 +85,7 @@ public class UniversityController(IRepository<WebAppDatabaseContext> repository)
             {
                 return ErrorMessageResult(CommonErrors.ProfessorNotFound);
             }
-            
+
             professors.Add(pr);
         }
 
@@ -94,6 +94,26 @@ public class UniversityController(IRepository<WebAppDatabaseContext> repository)
             Name = university.Name,
             Professors = professors
         });
+
+        return Ok();
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<RequestResponse>> AddProfessorToUniversity([FromBody] Guid uni, [FromBody] Guid prof)
+    {
+        var p = await repository.GetAsync(new ProfessorSpec(prof));
+        if (p == null)
+        {
+            return ErrorMessageResult(CommonErrors.ProfessorNotFound);
+        }
+
+        var u = await repository.GetAsync(new UniversitySpec(uni));
+        if (u == null)
+        {
+            return ErrorMessageResult(CommonErrors.UniversityNotFound);
+        }
+
+        u.Professors.Add(p);
 
         return Ok();
     }

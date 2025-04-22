@@ -68,7 +68,6 @@ public class ArticleController(IRepository<WebAppDatabaseContext> repository) : 
             : ErrorMessageResult<ICollection<ArticleDTO>>(CommonErrors.ProfessorNotFound);
     }
 
-    [Authorize]
     [HttpPost]
     public async Task<ActionResult<RequestResponse>> Add([FromBody] ArticleAddDTO article)
     {
@@ -115,7 +114,6 @@ public class ArticleController(IRepository<WebAppDatabaseContext> repository) : 
         return Ok();
     }
 
-    [Authorize]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult<RequestResponse>> Delete([FromRoute] Guid id)
     {

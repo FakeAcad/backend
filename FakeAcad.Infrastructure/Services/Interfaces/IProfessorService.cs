@@ -11,8 +11,8 @@ public interface IProfessorService
     
     public Task<ServiceResponse<ProfessorDTO>> GetProfessorByName(string firstName, string lastName, CancellationToken cancellationToken = default);
     
-    public Task<ServiceResponse<ICollection<Professor>>> GetProfessorsByUniversity(string university, CancellationToken cancellationToken = default);
-    public Task<ServiceResponse<ICollection<Professor>>> GetProfessorsByArticle(string article, CancellationToken cancellationToken = default);
+    public Task<ServiceResponse<ICollection<ProfessorDTO>>> GetProfessorsByUniversity(string university, CancellationToken cancellationToken = default);
+    public Task<ServiceResponse<ICollection<ProfessorDTO>>> GetProfessorsByArticle(string article, CancellationToken cancellationToken = default);
     
     public Task<ServiceResponse> AddProfessor(ProfessorAddDTO professor, CancellationToken cancellationToken = default);
 }

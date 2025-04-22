@@ -1,91 +1,90 @@
-using System.Net;
 using FakeAcad.Core.DataTransferObjects;
-using FakeAcad.Core.Entities;
 using FakeAcad.Core.Errors;
 using FakeAcad.Core.Responses;
-using FakeAcad.Core.Specifications;
-using FakeAcad.Infrastructure.Database;
-using FakeAcad.Infrastructure.Repositories.Interfaces;
+using FakeAcad.Infrastructure.HttpClients;
 using FakeAcad.Infrastructure.Services.Interfaces;
 
 namespace FakeAcad.Infrastructure.Services.Implementations;
 
-public class ProfessorService(IRepository<WebAppDatabaseContext> repository) : IProfessorService
+public class ProfessorService(ProfessorHttpClient professorHttpClient) : IProfessorService
 {
     public async Task<ServiceResponse<ProfessorDTO>> GetProfessor(Guid id,
         CancellationToken cancellationToken = default)
     {
-        var result =
-            await repository.GetAsync(new ProfessorProjectionSpec(id),
-                cancellationToken);
+        var result = await professorHttpClient.GetByIdAsync(id);
 
-        return result != null
-            ? ServiceResponse.ForSuccess(result)
-            : ServiceResponse.FromError<ProfessorDTO>(CommonErrors
-                .ProfessorNotFound);
+        if (result.ErrorMessage != null)
+        {
+            return ServiceResponse.FromError<ProfessorDTO>(result.ErrorMessage);
+        }
+        var professor = result.Response;
+
+        return professor != null ?
+            ServiceResponse.ForSuccess(professor) :
+            ServiceResponse.FromError<ProfessorDTO>(CommonErrors.ProfessorNotFound);
     }
-    
+
     public async Task<ServiceResponse<ProfessorDTO>> GetProfessorByName(string firstName, string lastName,
         CancellationToken cancellationToken = default)
     {
-        var result = await repository.GetAsync(new ProfessorProjectionSpec(firstName, lastName), cancellationToken);
+        var result = await professorHttpClient.GetByNameAsync(firstName, lastName);
 
-        return result != null ? 
-            ServiceResponse.ForSuccess(result) : 
+        if (result.ErrorMessage != null)
+        {
+            return ServiceResponse.FromError<ProfessorDTO>(result.ErrorMessage);
+        }
+
+        var professor = result.Response;
+
+        return professor != null ?
+            ServiceResponse.ForSuccess(professor) :
             ServiceResponse.FromError<ProfessorDTO>(CommonErrors.ProfessorNotFound);
     }
-    
-    public async Task<ServiceResponse<ICollection<Professor>>> GetProfessorsByUniversity(string university, CancellationToken cancellationToken = default)
-    {
-        var uni = await repository.GetAsync(new UniversityProjectionSpec(university),
-            cancellationToken);
 
-        return uni != null
-            ? ServiceResponse.ForSuccess(uni.Professors)
-            : ServiceResponse.FromError<ICollection<Professor>>(CommonErrors
-                .UniversityNotFound);
-    }
-    
-    public async Task<ServiceResponse<ICollection<Professor>>> GetProfessorsByArticle(string article, CancellationToken cancellationToken = default)
+    public async Task<ServiceResponse<ICollection<ProfessorDTO>>> GetProfessorsByUniversity(string university, CancellationToken cancellationToken = default)
     {
-        var ar = await repository.GetAsync(new ArticleProjectionSpec(article),
-            cancellationToken);
+        var result = await professorHttpClient.GetByUniversityAsync(university);
 
-        return ar != null
-            ? ServiceResponse.ForSuccess(ar.Professors)
-            : ServiceResponse.FromError<ICollection<Professor>>(CommonErrors
-                .ArticleNotFound);
+        if (result.ErrorMessage != null)
+        {
+            return ServiceResponse.FromError<ICollection<ProfessorDTO>>(result.ErrorMessage);
+        }
+
+        var professors = result.Response;
+
+        return professors != null ?
+            ServiceResponse.ForSuccess(professors) :
+            ServiceResponse.FromError<ICollection<ProfessorDTO>>(CommonErrors.ProfessorNotFound);
     }
-    
+
+    public async Task<ServiceResponse<ICollection<ProfessorDTO>>> GetProfessorsByArticle(string article, CancellationToken cancellationToken = default)
+    {
+        var result = await professorHttpClient.GetByArticleAsync(article);
+
+        if (result.ErrorMessage != null)
+        {
+            return ServiceResponse.FromError<ICollection<ProfessorDTO>>(result.ErrorMessage);
+        }
+
+        var professors = result.Response;
+
+        return professors != null ?
+            ServiceResponse.ForSuccess(professors) :
+            ServiceResponse.FromError<ICollection<ProfessorDTO>>(CommonErrors.ProfessorNotFound);
+    }
+
     public async Task<ServiceResponse> AddProfessor(ProfessorAddDTO professor,
         CancellationToken cancellationToken = default)
     {
-        var result = await repository.GetAsync(new ProfessorSpec(professor.FirstName, professor.LastName), cancellationToken);
-        if (result != null)
+        var result = await professorHttpClient.AddProfessorAsync(professor);
+
+        if (result.ErrorMessage != null)
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.Conflict, "The professor already exists!", ErrorCodes.ProfessorAlreadyExists));
+            return ServiceResponse.FromError(result.ErrorMessage);
         }
 
-        ICollection<University> universities = new List<University>();
-        foreach (var u in professor.UniversitiesIds)
-        {
-            var un = await repository.GetAsync(new UniversitySpec(u), cancellationToken);
-            if (un == null)
-            {
-                return ServiceResponse.FromError(CommonErrors.UniversityNotFound);
-            }
-            
-            universities.Add(un);
-        }
-
-        await repository.AddAsync(new Professor()
-        {
-            FirstName = professor.FirstName,
-            LastName = professor.LastName,
-            Position = professor.Position,
-            Universities = universities
-        }, cancellationToken);
-
-        return ServiceResponse.ForSuccess();
+        return result.Response != null ?
+            ServiceResponse.ForSuccess() :
+            ServiceResponse.FromError(CommonErrors.ProfessorNotFound);
     }
 }

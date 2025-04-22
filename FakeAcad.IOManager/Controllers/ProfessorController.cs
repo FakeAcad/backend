@@ -68,7 +68,6 @@ public class ProfessorController(IRepository<WebAppDatabaseContext> repository) 
             : ErrorMessageResult<ICollection<ProfessorDTO>>(CommonErrors.UniversityNotFound);
     }
 
-    [Authorize]
     [HttpPost]
     public async Task<ActionResult<RequestResponse>> Add([FromBody] ProfessorAddDTO professor)
     {

@@ -13,9 +13,9 @@ public interface IArticleService
     
     // public Task<ServiceResponse<ICollection<ArticleDTO>>> GetArticlesByUser(string university, CancellationToken cancellationToken = default);
     
-    public Task<ServiceResponse<ICollection<Article>>> GetArticlesByUniversity(string university, CancellationToken cancellationToken = default);
+    public Task<ServiceResponse<ICollection<ArticleDTO>>> GetArticlesByUniversity(string university, CancellationToken cancellationToken = default);
     
-    public Task<ServiceResponse<ICollection<Article>>> GetArticlesByProfessor(string firstName, string lastName, CancellationToken cancellationToken = default);
+    public Task<ServiceResponse<ICollection<ArticleDTO>>> GetArticlesByProfessor(string firstName, string lastName, CancellationToken cancellationToken = default);
     
     public Task<ServiceResponse> AddArticle(ArticleAddDTO article, UserDTO requestingUser, CancellationToken cancellationToken = default);
     

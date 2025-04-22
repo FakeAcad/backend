@@ -4,7 +4,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddRepository()
     .UseLogger()
-    .AddWorkers()
     .AddApi();
 
 var app = builder.Build();
