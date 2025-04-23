@@ -24,6 +24,22 @@ namespace FakeAcad.Infrastructure.HttpClients
             return result ?? RequestResponse<UserDTO>.FromErrorAnyType(CommonErrors.FailedToDeserialize);
         }
 
+        public async Task<RequestResponse<UserWithPasswordDTO>> GetByEmailAsync(string email)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{_baseUrl}/GetByEmail/{email}");
+            var response = await SendRequestAsync(request);
+            var result = await response.Content.ReadFromJsonAsync<RequestResponse<UserWithPasswordDTO>>();
+            return result ?? RequestResponse<UserWithPasswordDTO>.FromErrorAnyType(CommonErrors.FailedToDeserialize);
+        }
+
+        public async Task<RequestResponse<int>> GetCountAsync()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{_baseUrl}/GetCount");
+            var response = await SendRequestAsync(request);
+            var result = await response.Content.ReadFromJsonAsync<RequestResponse<int>>();
+            return result ?? RequestResponse<int>.FromErrorAnyType(CommonErrors.FailedToDeserialize);
+        }
+
         public async Task<RequestResponse<PagedResponse<UserDTO>>> GetPageAsync(PaginationSearchQueryParams pagination)
         {
             var queryString = $"?Page={pagination.Page}&PageSize={pagination.PageSize}";

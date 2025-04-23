@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using FakeAcad.Core.DataTransferObjects;
 using FakeAcad.Core.Handlers;
 using FakeAcad.Core.Responses;
-using FakeAcad.Infrastructure.Services.Implementations;
 using FakeAcad.Infrastructure.Services.Interfaces;
 
 namespace FakeAcad.Backend.Controllers;

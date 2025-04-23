@@ -6,16 +6,19 @@ using System.Security.Claims;
 using System.Text;
 using FakeAcad.Core.DataTransferObjects;
 using FakeAcad.Infrastructure.Services.Interfaces;
+using FakeAcad.Core.Responses;
+using FakeAcad.Infrastructure.HttpClients;
+using FakeAcad.Core.Errors;
 
 namespace FakeAcad.Infrastructure.Services.Implementations;
 
 /// <summary>
 /// Inject the required service configuration from the application.json or environment variables.
 /// </summary>
-public class LoginService(IOptions<JwtConfiguration> jwtConfiguration) : ILoginService
+public class LoginService(IOptions<JwtConfiguration> jwtConfiguration, UserHttpClient userHttpClient) : ILoginService
 {
     private readonly JwtConfiguration _jwtConfiguration = jwtConfiguration.Value;
-    
+
     public string GetToken(UserDTO user, DateTime issuedAt, TimeSpan expiresIn)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -36,5 +39,41 @@ public class LoginService(IOptions<JwtConfiguration> jwtConfiguration) : ILoginS
         };
 
         return tokenHandler.WriteToken(tokenHandler.CreateToken(tokenDescriptor)); // Create the token.
+    }
+
+    public async Task<ServiceResponse<LoginResponseDTO>> Login(LoginDTO login, CancellationToken cancellationToken = default)
+    {
+        var result = await userHttpClient.GetByEmailAsync(login.Email);
+
+        if (result.ErrorMessage != null)
+        {
+            return ServiceResponse.FromError<LoginResponseDTO>(CommonErrors.UserNotFound);
+        }
+
+        var userEntity = result.Response;
+
+        if (userEntity == null)
+        {
+            return ServiceResponse.FromError<LoginResponseDTO>(CommonErrors.UserNotFound);
+        }
+
+        if (userEntity.Password != login.Password)
+        {
+            return ServiceResponse.FromError<LoginResponseDTO>(CommonErrors.WrongPassword);
+        }
+
+        var user = new UserDTO
+        {
+            Id = userEntity.Id,
+            Name = userEntity.Name,
+            Email = userEntity.Email,
+            Role = userEntity.Role
+        };
+
+        return ServiceResponse.ForSuccess(new LoginResponseDTO
+        {
+            User = user,
+            Token = GetToken(user, DateTime.UtcNow, new(7, 0, 0, 0))
+        });
     }
 }

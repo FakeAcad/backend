@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using FakeAcad.Core.DataTransferObjects;
 using FakeAcad.Core.Entities;
@@ -45,7 +44,7 @@ public class ArticleController(IRepository<WebAppDatabaseContext> repository) : 
             return ErrorMessageResult<ICollection<ArticleDTO>>(CommonErrors.UniversityNotFound);
         }
 
-        var result = await repository.GetAsync(ArticleProjectionSpec.byUniversity(uni.Id));
+        var result = await repository.ListAsync(ArticleProjectionSpec.byUniversity(uni.Id));
 
         return result != null
             ? Ok(result)
@@ -61,7 +60,7 @@ public class ArticleController(IRepository<WebAppDatabaseContext> repository) : 
             return ErrorMessageResult<ICollection<ArticleDTO>>(CommonErrors.ProfessorNotFound);
         }
 
-        var result = await repository.GetAsync(ArticleProjectionSpec.byProfessor(prof.Id));
+        var result = await repository.ListAsync(ArticleProjectionSpec.byProfessor(prof.Id));
 
         return result != null
             ? Ok(result)

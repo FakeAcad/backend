@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using FakeAcad.Core.DataTransferObjects;
 using FakeAcad.Core.Entities;
@@ -61,7 +60,7 @@ public class ProfessorController(IRepository<WebAppDatabaseContext> repository) 
             return ErrorMessageResult<ICollection<ProfessorDTO>>(CommonErrors.UniversityNotFound);
         }
 
-        var result = await repository.GetAsync(ProfessorProjectionSpec.byUniversity(universityDTO.Id));
+        var result = await repository.ListAsync(ProfessorProjectionSpec.byUniversity(universityDTO.Id));
 
         return result != null
             ? Ok(result)

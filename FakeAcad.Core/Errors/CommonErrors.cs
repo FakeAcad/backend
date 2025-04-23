@@ -23,4 +23,6 @@ public static class CommonErrors
     public static ErrorMessage TechnicalSupport => new(HttpStatusCode.InternalServerError, "An unknown error occurred, contact the technical support!", ErrorCodes.TechnicalError);
 
     public static ErrorMessage FailedToDeserialize => new(HttpStatusCode.BadRequest, "Failed to deserialize the request body!", ErrorCodes.TechnicalError);
+
+    public static ErrorMessage WrongPassword => new(HttpStatusCode.Unauthorized, "Wrong password!", ErrorCodes.WrongPassword);
 }

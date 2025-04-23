@@ -26,13 +26,13 @@ public class ArticleController(IUserService userService, IArticleService article
     }
     
     [HttpGet("{univ}")]
-    public async Task<ActionResult<RequestResponse<ICollection<Article>>>> GetByUniv([FromRoute] string univ)
+    public async Task<ActionResult<RequestResponse<ICollection<ArticleDTO>>>> GetByUniv([FromRoute] string univ)
     {
         return FromServiceResponse(await articleService.GetArticlesByUniversity(univ));
     }
     
     [HttpGet("{firstName},{lastName}")]
-    public async Task<ActionResult<RequestResponse<ICollection<Article>>>> GetByProf([FromRoute] string firstName, string lastName)
+    public async Task<ActionResult<RequestResponse<ICollection<ArticleDTO>>>> GetByProf([FromRoute] string firstName, string lastName)
     {
         return FromServiceResponse(await articleService.GetArticlesByProfessor(firstName, lastName));
     }

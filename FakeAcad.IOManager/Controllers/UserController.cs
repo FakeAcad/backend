@@ -26,11 +26,29 @@ public class UserController(IRepository<WebAppDatabaseContext> repository) : Bas
             ErrorMessageResult<UserDTO>(CommonErrors.UserNotFound);
     }
 
+    [HttpGet("{email}")]
+    public async Task<ActionResult<RequestResponse<UserWithPasswordDTO>>> GetByEmail([FromRoute] string email)
+    {
+        var result = await repository.GetAsync(new UserWithPasswordProjectionSpec(email));
+
+        return result != null ?
+            Ok(result) :
+            ErrorMessageResult<UserWithPasswordDTO>(CommonErrors.UserNotFound);
+    }
+
     [HttpGet]
     public async Task<ActionResult<RequestResponse<PagedResponse<UserDTO>>>> GetPage([FromQuery] PaginationSearchQueryParams pagination)
 
     {
         var result = await repository.PageAsync(pagination, new UserProjectionSpec(pagination.Search));
+
+        return Ok(result);
+    }
+
+    [HttpGet("count")]
+    public async Task<ActionResult<RequestResponse<int>>> GetCount()
+    {
+        var result = await repository.GetCountAsync<User>();
 
         return Ok(result);
     }

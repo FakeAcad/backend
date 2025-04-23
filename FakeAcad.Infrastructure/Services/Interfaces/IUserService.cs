@@ -19,10 +19,6 @@ public interface IUserService
     /// </summary>
     public Task<ServiceResponse<PagedResponse<UserDTO>>> GetUsers(PaginationSearchQueryParams pagination, CancellationToken cancellationToken = default);
     /// <summary>
-    /// Login as suggested responds to a user login request with the JWT token and user information.
-    /// </summary>
-    public Task<ServiceResponse<LoginResponseDTO>> Login(LoginDTO login, CancellationToken cancellationToken = default);
-    /// <summary>
     /// GetUserCount returns the number of users in the database.
     /// </summary>
     public Task<ServiceResponse<int>> GetUserCount(CancellationToken cancellationToken = default);

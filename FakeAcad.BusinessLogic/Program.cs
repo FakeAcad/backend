@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddCorsConfiguration()
     .AddAuthorizationWithSwagger("FakeAcad")
     .AddServices()
+    .AddHttpClients("http://io-service:80")
     .UseLogger()
     .AddWorkers()
     .AddApi();

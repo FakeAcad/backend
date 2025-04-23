@@ -45,7 +45,7 @@ public class UniversityController(IRepository<WebAppDatabaseContext> repository)
             return ErrorMessageResult<ICollection<UniversityDTO>>(CommonErrors.ArticleNotFound);
         }
 
-        var result = await repository.GetAsync(new ArticleProjectionSpec(article));
+        var result = await repository.ListAsync(new ArticleProjectionSpec(article));
 
         return result != null
             ? Ok(result)
@@ -61,7 +61,7 @@ public class UniversityController(IRepository<WebAppDatabaseContext> repository)
             return ErrorMessageResult<ICollection<UniversityDTO>>(CommonErrors.ProfessorNotFound);
         }
 
-        var result = await repository.GetAsync(new ProfessorProjectionSpec(firstName, lastName));
+        var result = await repository.ListAsync(new ProfessorProjectionSpec(firstName, lastName));
 
         return result != null
             ? Ok(result)
@@ -98,8 +98,8 @@ public class UniversityController(IRepository<WebAppDatabaseContext> repository)
         return Ok();
     }
 
-    [HttpPost]
-    public async Task<ActionResult<RequestResponse>> AddProfessorToUniversity([FromBody] Guid uni, [FromBody] Guid prof)
+    [HttpPost("{uni},{prof}")]
+    public async Task<ActionResult<RequestResponse>> AddProfessorToUniversity([FromRoute] Guid uni, Guid prof)
     {
         var p = await repository.GetAsync(new ProfessorSpec(prof));
         if (p == null)

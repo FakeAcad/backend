@@ -15,112 +15,135 @@ namespace FakeAcad.Infrastructure.Services.Implementations;
 /// <summary>
 /// Inject the required services through the constructor.
 /// </summary>
-public class UserService(UserHttpClient userHttpClient, ILoginService loginService, IMailService mailService)
+public class UserService(UserHttpClient userHttpClient, IMailService mailService)
     : IUserService
 {
     public async Task<ServiceResponse<UserDTO>> GetUser(Guid id, CancellationToken cancellationToken = default)
     {
         var result = await userHttpClient.GetByIdAsync(id);
 
-        return result != null ? 
-            ServiceResponse.ForSuccess(result) : 
-            ServiceResponse.FromError<UserDTO>(CommonErrors.UserNotFound); // Pack the result or error into a ServiceResponse.
+        if (result.ErrorMessage != null)
+        {
+            return ServiceResponse.FromError<UserDTO>(result.ErrorMessage);
+        }
+
+        var user = result.Response;
+
+        return user != null ?
+            ServiceResponse.ForSuccess(user) :
+            ServiceResponse.FromError<UserDTO>(CommonErrors.UserNotFound);
     }
 
     public async Task<ServiceResponse<PagedResponse<UserDTO>>> GetUsers(PaginationSearchQueryParams pagination, CancellationToken cancellationToken = default)
     {
-        var result = await repository.PageAsync(pagination, new UserProjectionSpec(pagination.Search), cancellationToken); // Use the specification and pagination API to get only some entities from the database.
+        var result = await userHttpClient.GetPageAsync(pagination);
 
-        return ServiceResponse.ForSuccess(result);
+        if (result.ErrorMessage != null)
+        {
+            return ServiceResponse.FromError<PagedResponse<UserDTO>>(result.ErrorMessage);
+        }
+
+        var users = result.Response;
+
+        return users != null ?
+            ServiceResponse.ForSuccess(users) :
+            ServiceResponse.FromError<PagedResponse<UserDTO>>(CommonErrors.UserNotFound);
     }
 
-    public async Task<ServiceResponse<LoginResponseDTO>> Login(LoginDTO login, CancellationToken cancellationToken = default)
+    public async Task<ServiceResponse<int>> GetUserCount(CancellationToken cancellationToken = default)
     {
-        var result = await repository.GetAsync(new UserSpec(login.Email), cancellationToken);
+        var result = await userHttpClient.GetCountAsync();
 
-        if (result == null) // Verify if the user is found in the database.
+        if (result.ErrorMessage != null)
         {
-            return ServiceResponse.FromError<LoginResponseDTO>(CommonErrors.UserNotFound); // Pack the proper error as the response.
+            return ServiceResponse.FromError<int>(result.ErrorMessage);
         }
 
-        if (result.Password != login.Password) // Verify if the password hash of the request is the same as the one in the database.
-        {
-            return ServiceResponse.FromError<LoginResponseDTO>(new(HttpStatusCode.BadRequest, "Wrong password!", ErrorCodes.WrongPassword));
-        }
+        var count = result.Response;
 
-        var user = new UserDTO
-        {
-            Id = result.Id,
-            Email = result.Email,
-            Name = result.Name,
-            Role = result.Role
-        };
-
-        return ServiceResponse.ForSuccess(new LoginResponseDTO
-        {
-            User = user,
-            Token = loginService.GetToken(user, DateTime.UtcNow, new(7, 0, 0, 0)) // Get a JWT for the user issued now and that expires in 7 days.
-        });
+        return ServiceResponse.ForSuccess(count);
     }
-
-    public async Task<ServiceResponse<int>> GetUserCount(CancellationToken cancellationToken = default) => 
-        ServiceResponse.ForSuccess(await repository.GetCountAsync<User>(cancellationToken)); // Get the count of all user entities in the database.
 
     public async Task<ServiceResponse> AddUser(UserAddDTO user, UserDTO? requestingUser, CancellationToken cancellationToken = default)
     {
         if (requestingUser != null && requestingUser.Role != UserRoleEnum.Moderator) // Verify who can add the user, you can change this however you se fit.
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only the admin can add users!", ErrorCodes.CannotAdd));
+            return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only the admin can add the user!", ErrorCodes.CannotAdd));
         }
 
-        var result = await repository.GetAsync(new UserSpec(user.Email), cancellationToken);
+        var result = await userHttpClient.GetByEmailAsync(user.Email); // Check if the user already exists.
 
-        if (result != null)
+        if (result.Response != null)
         {
             return ServiceResponse.FromError(new(HttpStatusCode.Conflict, "The user already exists!", ErrorCodes.UserAlreadyExists));
         }
 
-        await repository.AddAsync(new User
-        {
-            Email = user.Email,
-            Name = user.Name,
-            Role = user.Role,
-            Password = user.Password
-        }, cancellationToken); // A new entity is created and persisted in the database.
+        var response = await userHttpClient.AddUserAsync(user); // Add the user.
 
-        await mailService.SendMail(user.Email, "Welcome!", MailTemplates.UserAddTemplate(user.Name), true, "My App", cancellationToken); // You can send a notification on the user email. Change the email if you want.
+        if (response.ErrorMessage != null)
+        {
+            return ServiceResponse.FromError(response.ErrorMessage);
+        }
 
         return ServiceResponse.ForSuccess();
     }
 
     public async Task<ServiceResponse> UpdateUser(UserUpdateDTO user, UserDTO? requestingUser, CancellationToken cancellationToken = default)
     {
-        if (requestingUser != null && requestingUser.Role != UserRoleEnum.Moderator && requestingUser.Id != user.Id) // Verify who can add the user, you can change this however you se fit.
+        if (requestingUser == null)
+        {
+            return ServiceResponse.FromError(new(HttpStatusCode.Unauthorized, "You must be logged in to update the user!", ErrorCodes.Unauthorized));
+        }
+
+        if (requestingUser.Role != UserRoleEnum.Moderator && requestingUser.Id != user.Id)
         {
             return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only the admin or the own user can update the user!", ErrorCodes.CannotUpdate));
         }
 
-        var entity = await repository.GetAsync(new UserSpec(user.Id), cancellationToken); 
+        var result = await userHttpClient.GetByIdAsync(user.Id);
 
-        if (entity != null) // Verify if the user is not found, you cannot update a non-existing entity.
+        if (result.ErrorMessage != null)
         {
-            entity.Name = user.Name ?? entity.Name;
-            entity.Password = user.Password ?? entity.Password;
-
-            await repository.UpdateAsync(entity, cancellationToken); // Update the entity and persist the changes.
+            return ServiceResponse.FromError(result.ErrorMessage);
         }
+
+        var response = await userHttpClient.UpdateUserAsync(user);
+
+        if (response.ErrorMessage != null)
+        {
+            return ServiceResponse.FromError(response.ErrorMessage);
+        }
+
+        await mailService.SendMail(requestingUser.Email, "User updated", $"The user {user.Name} has been updated!");
 
         return ServiceResponse.ForSuccess();
     }
 
     public async Task<ServiceResponse> DeleteUser(Guid id, UserDTO? requestingUser = null, CancellationToken cancellationToken = default)
     {
-        if (requestingUser != null && requestingUser.Role != UserRoleEnum.Moderator && requestingUser.Id != id) // Verify who can add the user, you can change this however you se fit.
+        if (requestingUser != null && requestingUser.Role != UserRoleEnum.Moderator && requestingUser.Id != id)
         {
             return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only the admin or the own user can delete the user!", ErrorCodes.CannotDelete));
         }
 
-        await repository.DeleteAsync<User>(id, cancellationToken); // Delete the entity.
+        var result = await userHttpClient.GetByIdAsync(id);
+
+        if (result.ErrorMessage != null)
+        {
+            return ServiceResponse.FromError(result.ErrorMessage);
+        }
+
+        var response = await userHttpClient.DeleteUserAsync(id);
+
+        if (response.ErrorMessage != null)
+        {
+            return ServiceResponse.FromError(response.ErrorMessage);
+        }
+
+        if (requestingUser != null)
+        {
+            await mailService.SendMail(requestingUser.Email, "User deleted", $"The user {result.Response?.Name} has been deleted!");
+        }
 
         return ServiceResponse.ForSuccess();
     }

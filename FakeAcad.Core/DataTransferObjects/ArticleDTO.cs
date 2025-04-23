@@ -11,7 +11,7 @@ public class ArticleDTO
     
     public Guid UserId { get; set; }
     
-    public ICollection<University> Universities { get; set; } = new List<University>();
-    public ICollection<Professor> Professors { get; set; } = new List<Professor>();
+    public ICollection<UniversityDTO> Universities { get; set; } = new List<UniversityDTO>();
+    public ICollection<ProfessorDTO> Professors { get; set; } = new List<ProfessorDTO>();
     public Guid ComplaintId { get; set; }
 }

@@ -2,7 +2,6 @@ using Ardalis.Specification;
 using Microsoft.EntityFrameworkCore;
 using FakeAcad.Core.DataTransferObjects;
 using FakeAcad.Core.Entities;
-using Microsoft.VisualBasic;
 
 namespace FakeAcad.Core.Specifications;
 
@@ -16,8 +15,17 @@ public class ArticleProjectionSpec : Specification<Article, ArticleDTO>
                 Description = e.Description,
                 Content = e.Content,
                 UserId = e.UserId,
-                Universities = e.Universities,
-                Professors = e.Professors,
+                Universities = e.Universities.Select(u => new UniversityDTO()
+                {
+                    Id = u.Id,
+                    Name = u.Name,
+                }).ToList(),
+                Professors = e.Professors.Select(p => new ProfessorDTO()
+                {
+                    Id = p.Id,
+                    FirstName = p.FirstName,
+                    LastName = p.LastName,
+                }).ToList(),
                 ComplaintId = e.ComplaintId
                 
             })

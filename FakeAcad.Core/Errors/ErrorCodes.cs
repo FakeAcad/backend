@@ -8,6 +8,7 @@ namespace FakeAcad.Core.Errors;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ErrorCodes
 {
+    Unauthorized,
     Unknown,
     TechnicalError,
     EntityNotFound,
