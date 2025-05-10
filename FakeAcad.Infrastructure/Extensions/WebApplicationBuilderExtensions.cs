@@ -21,6 +21,7 @@ using Serilog.Events;
 using FakeAcad.Infrastructure.Repositories.Interfaces;
 using FakeAcad.Infrastructure.Repositories.Implementation;
 using FakeAcad.Infrastructure.HttpClients;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FakeAcad.Infrastructure.Extensions;
 
@@ -83,6 +84,17 @@ public static class WebApplicationBuilderExtensions
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase; // This converts the public property names of the objects serialized to Camel case.
                 options.JsonSerializerOptions.PropertyNameCaseInsensitive = true; // When deserializing request the properties of the JSON are mapped ignoring the casing.
             });
+
+        return builder;
+    }
+
+    public static WebApplicationBuilder ConfigureJson(this WebApplicationBuilder builder)
+    {
+        builder.Services.Configure<JsonOptions>(options =>
+        {
+            options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        });
 
         return builder;
     }

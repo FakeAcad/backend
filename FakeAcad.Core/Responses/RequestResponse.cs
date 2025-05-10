@@ -16,7 +16,25 @@ public class RequestResponse<T>
     /// </summary>
     public ErrorMessage? ErrorMessage { get; private init; }
 
-    protected RequestResponse() { }
+    public RequestResponse() { }
+
+    public static RequestResponse<T> Success(T result)
+    {
+        return new RequestResponse<T>
+        {
+            Response = result,
+            ErrorMessage = null
+        };
+    }
+
+    public static RequestResponse<T> Success()
+    {
+        return new RequestResponse<T>
+        {
+            Response = default,
+            ErrorMessage = null
+        };
+    }
 
     public static RequestResponse FromError(ErrorMessage? error)
     {

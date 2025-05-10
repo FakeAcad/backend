@@ -8,6 +8,7 @@ builder.AddCorsConfiguration()
     .AddHttpClients("http://io-service:80")
     .UseLogger()
     .AddWorkers()
+    .ConfigureJson()
     .AddApi();
 
 var app = builder.Build();

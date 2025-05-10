@@ -4,8 +4,8 @@ namespace FakeAcad.Infrastructure.HttpClients
 {
     public abstract class BaseHttpClient : IBaseHttpClient
     {
-        private readonly HttpClient _httpClient;
-        private readonly ILogger<BaseHttpClient> _logger;
+        protected readonly HttpClient _httpClient;
+        protected readonly ILogger<BaseHttpClient> _logger;
 
         protected BaseHttpClient(HttpClient httpClient, ILogger<BaseHttpClient> logger)
         {
@@ -18,7 +18,6 @@ namespace FakeAcad.Infrastructure.HttpClients
             try
             {
                 var response = await _httpClient.SendAsync(request);
-                response.EnsureSuccessStatusCode();
                 return response;
             }
             catch (Exception ex)

@@ -32,7 +32,7 @@ public class UserController(IRepository<WebAppDatabaseContext> repository) : Bas
         var result = await repository.GetAsync(new UserWithPasswordProjectionSpec(email));
 
         return result != null ?
-            Ok(result) :
+            Ok(RequestResponse<UserWithPasswordDTO>.Success(result)) :
             ErrorMessageResult<UserWithPasswordDTO>(CommonErrors.UserNotFound);
     }
 
@@ -45,12 +45,12 @@ public class UserController(IRepository<WebAppDatabaseContext> repository) : Bas
         return Ok(result);
     }
 
-    [HttpGet("count")]
+    [HttpGet]
     public async Task<ActionResult<RequestResponse<int>>> GetCount()
     {
         var result = await repository.GetCountAsync<User>();
-
-        return Ok(result);
+        var response = RequestResponse<int>.Success(result);
+        return Ok(response);
     }
 
     [HttpPost]
@@ -71,8 +71,7 @@ public class UserController(IRepository<WebAppDatabaseContext> repository) : Bas
             Password = user.Password
         });
 
-
-        return Ok();
+        return Ok(RequestResponse.Success());
     }
 
     [HttpPut]

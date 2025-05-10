@@ -28,6 +28,8 @@ namespace FakeAcad.Infrastructure.HttpClients
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"{_baseUrl}/GetByEmail/{email}");
             var response = await SendRequestAsync(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return RequestResponse<UserWithPasswordDTO>.FromErrorAnyType(CommonErrors.UserNotFound);
             var result = await response.Content.ReadFromJsonAsync<RequestResponse<UserWithPasswordDTO>>();
             return result ?? RequestResponse<UserWithPasswordDTO>.FromErrorAnyType(CommonErrors.FailedToDeserialize);
         }
