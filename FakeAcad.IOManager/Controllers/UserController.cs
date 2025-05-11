@@ -22,7 +22,7 @@ public class UserController(IRepository<WebAppDatabaseContext> repository) : Bas
         var result = await repository.GetAsync(new UserProjectionSpec(id));
 
         return result != null ?
-            Ok(result) :
+            OkRequestResponse(result) :
             ErrorMessageResult<UserDTO>(CommonErrors.UserNotFound);
     }
 
@@ -32,7 +32,7 @@ public class UserController(IRepository<WebAppDatabaseContext> repository) : Bas
         var result = await repository.GetAsync(new UserWithPasswordProjectionSpec(email));
 
         return result != null ?
-            Ok(RequestResponse<UserWithPasswordDTO>.Success(result)) :
+            OkRequestResponse(result) :
             ErrorMessageResult<UserWithPasswordDTO>(CommonErrors.UserNotFound);
     }
 
@@ -42,15 +42,15 @@ public class UserController(IRepository<WebAppDatabaseContext> repository) : Bas
     {
         var result = await repository.PageAsync(pagination, new UserProjectionSpec(pagination.Search));
 
-        return Ok(result);
+        return OkRequestResponse(result);
     }
 
     [HttpGet]
     public async Task<ActionResult<RequestResponse<int>>> GetCount()
     {
         var result = await repository.GetCountAsync<User>();
-        var response = RequestResponse<int>.Success(result);
-        return Ok(response);
+
+        return OkRequestResponse(result);
     }
 
     [HttpPost]
@@ -71,7 +71,7 @@ public class UserController(IRepository<WebAppDatabaseContext> repository) : Bas
             Password = user.Password
         });
 
-        return Ok(RequestResponse.Success());
+        return OkRequestResponse();
     }
 
     [HttpPut]
@@ -87,7 +87,7 @@ public class UserController(IRepository<WebAppDatabaseContext> repository) : Bas
             await repository.UpdateAsync(entity);
         }
 
-        return Ok();
+        return OkRequestResponse();
     }
 
     [HttpDelete("{id:guid}")]
@@ -95,6 +95,6 @@ public class UserController(IRepository<WebAppDatabaseContext> repository) : Bas
     {
         await repository.DeleteAsync<User>(id);
 
-        return Ok();
+        return OkRequestResponse();
     }
 }

@@ -21,7 +21,7 @@ public class ProfessorController(IRepository<WebAppDatabaseContext> repository) 
         var result = await repository.GetAsync(new ProfessorProjectionSpec(id));
 
         return result != null
-            ? Ok(result)
+            ? OkRequestResponse(result)
             : ErrorMessageResult<ProfessorDTO>(CommonErrors.ProfessorNotFound);
     }
 
@@ -31,7 +31,7 @@ public class ProfessorController(IRepository<WebAppDatabaseContext> repository) 
         var result = await repository.GetAsync(new ProfessorProjectionSpec(firstName, lastName));
 
         return result != null
-            ? Ok(result)
+            ? OkRequestResponse(result)
             : ErrorMessageResult<ProfessorDTO>(CommonErrors.ProfessorNotFound);
     }
 
@@ -47,7 +47,7 @@ public class ProfessorController(IRepository<WebAppDatabaseContext> repository) 
         var result = await repository.GetAsync(new ArticleProjectionSpec(article));
 
         return result != null
-            ? Ok(result.Professors)
+            ? OkRequestResponse(result.Professors)
             : ErrorMessageResult<ICollection<ProfessorDTO>>(CommonErrors.ArticleNotFound);
     }
 
@@ -63,7 +63,7 @@ public class ProfessorController(IRepository<WebAppDatabaseContext> repository) 
         var result = await repository.ListAsync(ProfessorProjectionSpec.byUniversity(universityDTO.Id));
 
         return result != null
-            ? Ok(result)
+            ? OkRequestResponse((ICollection<ProfessorDTO>)result)
             : ErrorMessageResult<ICollection<ProfessorDTO>>(CommonErrors.UniversityNotFound);
     }
 
@@ -96,6 +96,6 @@ public class ProfessorController(IRepository<WebAppDatabaseContext> repository) 
             Universities = universities
         });
 
-        return Ok();
+        return OkRequestResponse();
     }
 }

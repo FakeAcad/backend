@@ -21,7 +21,7 @@ public class ArticleController(IRepository<WebAppDatabaseContext> repository) : 
         var result = await repository.GetAsync(new ArticleProjectionSpec(id));
 
         return result != null
-            ? Ok(result)
+            ? OkRequestResponse(result)
             : ErrorMessageResult<ArticleDTO>(CommonErrors.ArticleNotFound);
     }
 
@@ -31,7 +31,7 @@ public class ArticleController(IRepository<WebAppDatabaseContext> repository) : 
         var result = await repository.GetAsync(new ArticleProjectionSpec(title));
 
         return result != null
-            ? Ok(result)
+            ? OkRequestResponse(result)
             : ErrorMessageResult<ArticleDTO>(CommonErrors.ArticleNotFound);
     }
 
@@ -47,7 +47,7 @@ public class ArticleController(IRepository<WebAppDatabaseContext> repository) : 
         var result = await repository.ListAsync(ArticleProjectionSpec.byUniversity(uni.Id));
 
         return result != null
-            ? Ok(result)
+            ? OkRequestResponse((ICollection<ArticleDTO>)result)
             : ErrorMessageResult<ICollection<ArticleDTO>>(CommonErrors.UniversityNotFound);
     }
 
@@ -63,7 +63,7 @@ public class ArticleController(IRepository<WebAppDatabaseContext> repository) : 
         var result = await repository.ListAsync(ArticleProjectionSpec.byProfessor(prof.Id));
 
         return result != null
-            ? Ok(result)
+            ? OkRequestResponse((ICollection<ArticleDTO>)result)
             : ErrorMessageResult<ICollection<ArticleDTO>>(CommonErrors.ProfessorNotFound);
     }
 
@@ -110,13 +110,13 @@ public class ArticleController(IRepository<WebAppDatabaseContext> repository) : 
             Professors = professors
         }, default);
 
-        return Ok();
+        return OkRequestResponse();
     }
 
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult<RequestResponse>> Delete([FromRoute] Guid id)
     {
         await repository.DeleteAsync<Article>(id);
-        return Ok();
+        return OkRequestResponse();
     }
 }

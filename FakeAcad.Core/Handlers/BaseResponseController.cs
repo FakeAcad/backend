@@ -33,4 +33,6 @@ public abstract class BaseResponseController : ControllerBase
         response.Error == null ? Ok(RequestResponse<T>.FromServiceResponse(response)) : ErrorMessageResult<T>(response.Error);
 
     protected ActionResult<RequestResponse> OkRequestResponse() => Ok(RequestResponse.OkRequestResponse);
+
+    protected ActionResult<RequestResponse<T>> OkRequestResponse<T>(T data) => Ok(RequestResponse<T>.Success(data));
 }

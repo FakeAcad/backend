@@ -19,7 +19,7 @@ public class ComplaintController(IRepository<WebAppDatabaseContext> repository) 
         var result = await repository.GetAsync(new ComplaintProjectionSpec(id));
 
         return result != null
-            ? Ok(result)
+            ? OkRequestResponse(result)
             : ErrorMessageResult<ComplaintDTO>(CommonErrors.ComplaintNotFound);
     }
     
@@ -29,7 +29,7 @@ public class ComplaintController(IRepository<WebAppDatabaseContext> repository) 
         var result = await repository.GetAsync(new ComplaintProjectionSpec(name));
 
         return result != null
-            ? Ok(result)
+            ? OkRequestResponse(result)
             : ErrorMessageResult<ComplaintDTO>(CommonErrors.ComplaintNotFound);
     }
     
@@ -56,6 +56,6 @@ public class ComplaintController(IRepository<WebAppDatabaseContext> repository) 
             ArticleId = complaint.ArticleId,
         }, default);
 
-        return Ok();
+        return OkRequestResponse();
     }
 }

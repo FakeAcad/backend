@@ -34,4 +34,10 @@ public class UniversityProjectionSpec : Specification<University, UniversityDTO>
         Query.Where(e => EF.Functions.ILike(e.Name, searchExpr)); // This is an example on how database specific expressions can be used via C# expressions.
         // Note that this will be translated to the database something like "where user.Name ilike '%str%'".
     }
+
+    public static UniversityProjectionSpec byArticle(Guid articleId) {
+        var spec = new UniversityProjectionSpec(false);
+        spec.Query.Where(e => e.Articles.Any(a => a.Id == articleId));
+        return spec;
+    }
 }

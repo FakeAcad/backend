@@ -22,7 +22,7 @@ public class UniversityController(IRepository<WebAppDatabaseContext> repository)
         var result = await repository.GetAsync(new UniversityProjectionSpec(id));
 
         return result != null
-            ? Ok(result)
+            ? OkRequestResponse(result)
             : ErrorMessageResult<UniversityDTO>(CommonErrors.UniversityNotFound);
     }
 
@@ -32,7 +32,7 @@ public class UniversityController(IRepository<WebAppDatabaseContext> repository)
         var result = await repository.GetAsync(new UniversityProjectionSpec(name));
 
         return result != null
-            ? Ok(result)
+            ? OkRequestResponse(result)
             : ErrorMessageResult<UniversityDTO>(CommonErrors.UniversityNotFound);
     }
 
@@ -45,10 +45,10 @@ public class UniversityController(IRepository<WebAppDatabaseContext> repository)
             return ErrorMessageResult<ICollection<UniversityDTO>>(CommonErrors.ArticleNotFound);
         }
 
-        var result = await repository.ListAsync(new ArticleProjectionSpec(article));
+        var result = await repository.ListAsync(UniversityProjectionSpec.byArticle(articleDTO.Id));
 
         return result != null
-            ? Ok(result)
+            ? OkRequestResponse((ICollection<UniversityDTO>)result)
             : ErrorMessageResult<ICollection<UniversityDTO>>(CommonErrors.ArticleNotFound);
     }
 
@@ -64,7 +64,7 @@ public class UniversityController(IRepository<WebAppDatabaseContext> repository)
         var result = await repository.ListAsync(new ProfessorProjectionSpec(firstName, lastName));
 
         return result != null
-            ? Ok(result)
+            ? OkRequestResponse((ICollection<UniversityDTO>)result)
             : ErrorMessageResult<ICollection<UniversityDTO>>(CommonErrors.ProfessorNotFound);
     }
 
@@ -95,7 +95,7 @@ public class UniversityController(IRepository<WebAppDatabaseContext> repository)
             Professors = professors
         });
 
-        return Ok();
+        return OkRequestResponse();
     }
 
     [HttpPost("{uni},{prof}")]
@@ -115,6 +115,6 @@ public class UniversityController(IRepository<WebAppDatabaseContext> repository)
 
         u.Professors.Add(p);
 
-        return Ok();
+        return OkRequestResponse();
     }
 }
