@@ -63,5 +63,13 @@ namespace FakeAcad.Infrastructure.HttpClients
             var result = await response.Content.ReadFromJsonAsync<RequestResponse>();
             return result ?? RequestResponse.FromError(CommonErrors.FailedToDeserialize);
         }
+
+        public async Task<RequestResponse<ICollection<ArticleDTO>>> GetAllArticlesAsync()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{_baseUrl}/GetAll");
+            var response = await SendRequestAsync(request);
+            var result = await response.Content.ReadFromJsonAsync<RequestResponse<ICollection<ArticleDTO>>>();
+            return result ?? RequestResponse<ICollection<ArticleDTO>>.FromErrorAnyType(CommonErrors.FailedToDeserialize);
+        }
     }
 }

@@ -20,4 +20,6 @@ public interface IArticleService
     public Task<ServiceResponse> AddArticle(ArticleAddDTO article, UserDTO requestingUser, CancellationToken cancellationToken = default);
     
     public Task<ServiceResponse> DeleteArticle(Guid id, UserDTO requestingUser, CancellationToken cancellationToken = default);
+
+    public Task<ServiceResponse<ICollection<ArticleDTO>>> GetAllArticles(CancellationToken cancellationToken = default);
 }

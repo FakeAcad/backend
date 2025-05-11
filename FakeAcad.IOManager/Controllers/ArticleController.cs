@@ -119,4 +119,14 @@ public class ArticleController(IRepository<WebAppDatabaseContext> repository) : 
         await repository.DeleteAsync<Article>(id);
         return OkRequestResponse();
     }
+
+    [HttpGet]
+    public async Task<ActionResult<RequestResponse<ICollection<ArticleDTO>>>> GetAll()
+    {
+        var result = await repository.ListAsync(new ArticleProjectionSpec());
+
+        return result != null
+            ? OkRequestResponse((ICollection<ArticleDTO>)result)
+            : ErrorMessageResult<ICollection<ArticleDTO>>(CommonErrors.ArticleNotFound);
+    }
 }

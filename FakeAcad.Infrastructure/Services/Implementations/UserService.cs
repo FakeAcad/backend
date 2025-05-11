@@ -1,12 +1,9 @@
 ﻿using System.Net;
-using FakeAcad.Core.Constants;
 using FakeAcad.Core.DataTransferObjects;
-using FakeAcad.Core.Entities;
 using FakeAcad.Core.Enums;
 using FakeAcad.Core.Errors;
 using FakeAcad.Core.Requests;
 using FakeAcad.Core.Responses;
-using FakeAcad.Core.Specifications;
 using FakeAcad.Infrastructure.HttpClients;
 using FakeAcad.Infrastructure.Services.Interfaces;
 

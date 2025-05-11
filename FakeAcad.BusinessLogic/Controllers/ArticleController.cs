@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using FakeAcad.Core.DataTransferObjects;
-using FakeAcad.Core.Entities;
-using FakeAcad.Core.Handlers;
 using FakeAcad.Core.Responses;
 using FakeAcad.Infrastructure.Authorization;
 using FakeAcad.Infrastructure.Services.Interfaces;
@@ -12,7 +10,13 @@ namespace FakeAcad.Backend.Controllers;
 [ApiController]
 [Route("api/[controller]/[action]")]
 public class ArticleController(IUserService userService, IArticleService articleService) : AuthorizedController(userService) {
-    
+
+    [HttpGet]
+    public async Task<ActionResult<RequestResponse<ICollection<ArticleDTO>>>> GetAll()
+    {
+        return FromServiceResponse(await articleService.GetAllArticles());
+    }
+
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<RequestResponse<ArticleDTO>>> GetById([FromRoute] Guid id)
     {

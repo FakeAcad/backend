@@ -102,4 +102,20 @@ public class ArticleService(ArticleHttpClient articleHttpClient)
             ? ServiceResponse.ForSuccess()
             : ServiceResponse.FromError(CommonErrors.TechnicalSupport);
     }
+
+    public async Task<ServiceResponse<ICollection<ArticleDTO>>> GetAllArticles(CancellationToken cancellationToken = default)
+    {
+        var result = await articleHttpClient.GetAllArticlesAsync();
+
+        if (result.ErrorMessage != null)
+        {
+            return ServiceResponse.FromError<ICollection<ArticleDTO>>(result.ErrorMessage);
+        }
+
+        var articles = result.Response;
+
+        return articles != null
+            ? ServiceResponse.ForSuccess(articles)
+            : ServiceResponse.FromError<ICollection<ArticleDTO>>(CommonErrors.ArticleNotFound);
+    }
 }

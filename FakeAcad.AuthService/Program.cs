@@ -1,13 +1,21 @@
 using FakeAcad.Infrastructure.Extensions;
+using FakeAcad.Infrastructure.HttpClients;
+using FakeAcad.Infrastructure.Services.Implementations;
+using FakeAcad.Infrastructure.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddCorsConfiguration()
     .AddAuthorizationWithSwagger("FakeAcad")
-    .AddServices()
     .UseLogger()
     .ConfigureJson()
     .AddApi();
+
+builder.Services.AddHttpClient<UserHttpClient>(client => { client.BaseAddress = new Uri("http://io-service:80"); });
+builder.Services
+    .AddScoped<IUserService, UserService>()
+    .AddScoped<ILoginService, LoginService>()
+    .AddScoped<IMailService, MailService>();
 
 var app = builder.Build();
 
