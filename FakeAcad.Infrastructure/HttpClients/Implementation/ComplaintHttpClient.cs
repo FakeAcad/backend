@@ -19,7 +19,7 @@ namespace FakeAcad.Infrastructure.HttpClients
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"{_baseUrl}/GetById/{id}");
             var response = await SendRequestAsync(request);
-            var result = await response.Content.ReadFromJsonAsync<RequestResponse<ComplaintDTO>>();
+            var result = await response.Content.ReadFromJsonAsync<RequestResponse<ComplaintDTO>>(_jsonSerializerOptions);
             return result ?? RequestResponse<ComplaintDTO>.FromErrorAnyType(CommonErrors.FailedToDeserialize);
         }
 
@@ -27,7 +27,7 @@ namespace FakeAcad.Infrastructure.HttpClients
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"{_baseUrl}/GetById/{name}");
             var response = await SendRequestAsync(request);
-            var result = await response.Content.ReadFromJsonAsync<RequestResponse<ComplaintDTO>>();
+            var result = await response.Content.ReadFromJsonAsync<RequestResponse<ComplaintDTO>>(_jsonSerializerOptions);
             return result ?? RequestResponse<ComplaintDTO>.FromErrorAnyType(CommonErrors.FailedToDeserialize);
         }
 
@@ -36,7 +36,7 @@ namespace FakeAcad.Infrastructure.HttpClients
             var request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}/Add");
             request.Content = JsonContent.Create(complaint);
             var response = await SendRequestAsync(request);
-            var result = await response.Content.ReadFromJsonAsync<RequestResponse>();
+            var result = await response.Content.ReadFromJsonAsync<RequestResponse>(_jsonSerializerOptions);
             return result ?? RequestResponse.FromError(CommonErrors.FailedToDeserialize);
         }
     }

@@ -19,7 +19,7 @@ namespace FakeAcad.Infrastructure.HttpClients
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"{_baseUrl}/GetById/{id}");
             var response = await SendRequestAsync(request);
-            var result = await response.Content.ReadFromJsonAsync<RequestResponse<ArticleDTO>>();
+            var result = await response.Content.ReadFromJsonAsync<RequestResponse<ArticleDTO>>(_jsonSerializerOptions);
             return result ?? RequestResponse<ArticleDTO>.FromErrorAnyType(CommonErrors.FailedToDeserialize);
         }
 
@@ -27,7 +27,7 @@ namespace FakeAcad.Infrastructure.HttpClients
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"{_baseUrl}/GetByTitle/{title}");
             var response = await SendRequestAsync(request);
-            var result = await response.Content.ReadFromJsonAsync<RequestResponse<ArticleDTO>>();
+            var result = await response.Content.ReadFromJsonAsync<RequestResponse<ArticleDTO>>(_jsonSerializerOptions);
             return result ?? RequestResponse<ArticleDTO>.FromErrorAnyType(CommonErrors.FailedToDeserialize);
         }
 
@@ -35,7 +35,7 @@ namespace FakeAcad.Infrastructure.HttpClients
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"{_baseUrl}/GetByUniv/{university}");
             var response = await SendRequestAsync(request);
-            var result = await response.Content.ReadFromJsonAsync<RequestResponse<ICollection<ArticleDTO>>>();
+            var result = await response.Content.ReadFromJsonAsync<RequestResponse<ICollection<ArticleDTO>>>(_jsonSerializerOptions);
             return result ?? RequestResponse<ICollection<ArticleDTO>>.FromErrorAnyType(CommonErrors.FailedToDeserialize);
         }
 
@@ -43,7 +43,7 @@ namespace FakeAcad.Infrastructure.HttpClients
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"{_baseUrl}/GetByProf/{firstName},{lastName}");
             var response = await SendRequestAsync(request);
-            var result = await response.Content.ReadFromJsonAsync<RequestResponse<ICollection<ArticleDTO>>>();
+            var result = await response.Content.ReadFromJsonAsync<RequestResponse<ICollection<ArticleDTO>>>(_jsonSerializerOptions);
             return result ?? RequestResponse<ICollection<ArticleDTO>>.FromErrorAnyType(CommonErrors.FailedToDeserialize);
         }
 
@@ -52,7 +52,7 @@ namespace FakeAcad.Infrastructure.HttpClients
             var request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}/Add");
             request.Content = JsonContent.Create(article);
             var response = await SendRequestAsync(request);
-            var result = await response.Content.ReadFromJsonAsync<RequestResponse>();
+            var result = await response.Content.ReadFromJsonAsync<RequestResponse>(_jsonSerializerOptions);
             return result ?? RequestResponse.FromError(CommonErrors.FailedToDeserialize);
         }
 
@@ -60,7 +60,7 @@ namespace FakeAcad.Infrastructure.HttpClients
         {
             var request = new HttpRequestMessage(HttpMethod.Delete, $"{_baseUrl}/Delete/{id}");
             var response = await SendRequestAsync(request);
-            var result = await response.Content.ReadFromJsonAsync<RequestResponse>();
+            var result = await response.Content.ReadFromJsonAsync<RequestResponse>(_jsonSerializerOptions);
             return result ?? RequestResponse.FromError(CommonErrors.FailedToDeserialize);
         }
 
@@ -68,7 +68,7 @@ namespace FakeAcad.Infrastructure.HttpClients
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"{_baseUrl}/GetAll");
             var response = await SendRequestAsync(request);
-            var result = await response.Content.ReadFromJsonAsync<RequestResponse<ICollection<ArticleDTO>>>();
+            var result = await response.Content.ReadFromJsonAsync<RequestResponse<ICollection<ArticleDTO>>>(_jsonSerializerOptions);
             return result ?? RequestResponse<ICollection<ArticleDTO>>.FromErrorAnyType(CommonErrors.FailedToDeserialize);
         }
     }

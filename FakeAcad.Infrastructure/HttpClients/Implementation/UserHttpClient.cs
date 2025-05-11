@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Text.Json;
 using FakeAcad.Core.DataTransferObjects;
 using FakeAcad.Core.Errors;
 using FakeAcad.Core.Requests;
@@ -20,7 +21,7 @@ namespace FakeAcad.Infrastructure.HttpClients
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"{_baseUrl}/GetById/{id}");
             var response = await SendRequestAsync(request);
-            var result = await response.Content.ReadFromJsonAsync<RequestResponse<UserDTO>>();
+            var result = await response.Content.ReadFromJsonAsync<RequestResponse<UserDTO>>(_jsonSerializerOptions);
             return result ?? RequestResponse<UserDTO>.FromErrorAnyType(CommonErrors.FailedToDeserialize);
         }
 
@@ -30,7 +31,7 @@ namespace FakeAcad.Infrastructure.HttpClients
             var response = await SendRequestAsync(request);
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 return RequestResponse<UserWithPasswordDTO>.FromErrorAnyType(CommonErrors.UserNotFound);
-            var result = await response.Content.ReadFromJsonAsync<RequestResponse<UserWithPasswordDTO>>();
+            var result = await response.Content.ReadFromJsonAsync<RequestResponse<UserWithPasswordDTO>>(_jsonSerializerOptions);
             return result ?? RequestResponse<UserWithPasswordDTO>.FromErrorAnyType(CommonErrors.FailedToDeserialize);
         }
 
@@ -38,7 +39,7 @@ namespace FakeAcad.Infrastructure.HttpClients
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"{_baseUrl}/GetCount");
             var response = await SendRequestAsync(request);
-            var result = await response.Content.ReadFromJsonAsync<RequestResponse<int>>();
+            var result = await response.Content.ReadFromJsonAsync<RequestResponse<int>>(_jsonSerializerOptions);
             return result ?? RequestResponse<int>.FromErrorAnyType(CommonErrors.FailedToDeserialize);
         }
 
@@ -50,7 +51,7 @@ namespace FakeAcad.Infrastructure.HttpClients
 
             var request = new HttpRequestMessage(HttpMethod.Get, $"{_baseUrl}/GetPage{queryString}");
             var response = await SendRequestAsync(request);
-            var result = await response.Content.ReadFromJsonAsync<RequestResponse<PagedResponse<UserDTO>>>();
+            var result = await response.Content.ReadFromJsonAsync<RequestResponse<PagedResponse<UserDTO>>>(_jsonSerializerOptions);
             return result ?? RequestResponse<PagedResponse<UserDTO>>.FromErrorAnyType(CommonErrors.FailedToDeserialize);
         }
 
@@ -59,7 +60,7 @@ namespace FakeAcad.Infrastructure.HttpClients
             var request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}/Add");
             request.Content = JsonContent.Create(user);
             var response = await SendRequestAsync(request);
-            var result = await response.Content.ReadFromJsonAsync<RequestResponse>();
+            var result = await response.Content.ReadFromJsonAsync<RequestResponse>(_jsonSerializerOptions);
             return result ?? RequestResponse.FromError(CommonErrors.FailedToDeserialize);
         }
 
@@ -68,7 +69,7 @@ namespace FakeAcad.Infrastructure.HttpClients
             var request = new HttpRequestMessage(HttpMethod.Put, $"{_baseUrl}/Update");
             request.Content = JsonContent.Create(user);
             var response = await SendRequestAsync(request);
-            var result = await response.Content.ReadFromJsonAsync<RequestResponse>();
+            var result = await response.Content.ReadFromJsonAsync<RequestResponse>(_jsonSerializerOptions);
             return result ?? RequestResponse.FromError(CommonErrors.FailedToDeserialize);
         }
 
@@ -76,7 +77,7 @@ namespace FakeAcad.Infrastructure.HttpClients
         {
             var request = new HttpRequestMessage(HttpMethod.Delete, $"{_baseUrl}/Delete/{id}");
             var response = await SendRequestAsync(request);
-            var result = await response.Content.ReadFromJsonAsync<RequestResponse>();
+            var result = await response.Content.ReadFromJsonAsync<RequestResponse>(_jsonSerializerOptions);
             return result ?? RequestResponse.FromError(CommonErrors.FailedToDeserialize);
         }
     }

@@ -94,6 +94,7 @@ public static class WebApplicationBuilderExtensions
         {
             options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
 
         return builder;
@@ -196,7 +197,6 @@ public static class WebApplicationBuilderExtensions
         builder.Services.Configure<MailConfiguration>(builder.Configuration.GetSection(nameof(MailConfiguration)));
         builder.Services
             .AddScoped<IUserService, UserService>()
-            .AddScoped<ILoginService, LoginService>()
             .AddScoped<IMailService, MailService>()
             .AddTransient<IArticleService, ArticleService>()
             .AddTransient<IComplaintService, ComplaintService>()
@@ -239,7 +239,7 @@ public static class WebApplicationBuilderExtensions
         return builder;
     }
 
-    public static WebApplicationBuilder AddHttpClients(this WebApplicationBuilder builder, string baseUrl)
+    public static WebApplicationBuilder AddIOHttpClients(this WebApplicationBuilder builder, string baseUrl)
     {
 
         builder.Services.AddHttpClient<ArticleHttpClient>(client =>
