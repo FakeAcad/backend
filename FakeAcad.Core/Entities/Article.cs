@@ -11,7 +11,4 @@ public class Article : BaseEntity
     
     public ICollection<University> Universities { get; set; } = new List<University>();
     public ICollection<Professor> Professors { get; set; } = new List<Professor>();
-    
-    public Guid ComplaintId { get; set; }
-    public Complaint? Complaint { get; set; } = null!;
 }

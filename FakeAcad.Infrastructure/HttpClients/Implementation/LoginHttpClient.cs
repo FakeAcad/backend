@@ -10,7 +10,7 @@ namespace FakeAcad.Infrastructure.HttpClients
     {
         private readonly string _baseUrl = "api/Authorization";
 
-        public LoginHttpClient(HttpClient httpClient, ILogger<ComplaintHttpClient> logger)
+        public LoginHttpClient(HttpClient httpClient, ILogger<LoginHttpClient> logger)
             : base(httpClient, logger)
         {
         }

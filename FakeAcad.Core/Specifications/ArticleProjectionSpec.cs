@@ -26,7 +26,6 @@ public class ArticleProjectionSpec : Specification<Article, ArticleDTO>
                     FirstName = p.FirstName,
                     LastName = p.LastName,
                 }).ToList(),
-                ComplaintId = e.ComplaintId
                 
             })
             .OrderByDescending(x => x.CreatedAt, orderByCreatedAt);

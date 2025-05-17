@@ -25,11 +25,5 @@ public class ArticleConfigurations  : IEntityTypeConfiguration<Article>
             .IsRequired();
         builder.Property(e => e.UpdatedAt)
             .IsRequired();
-        
-        builder.HasOne(e => e.Complaint) // Aici se specifică o relație de unu-la-mulți.
-            .WithOne(e => e.Article) // Aici se furnizează maparea inversă pentru relația de unu-la-mulți.
-            .HasForeignKey<Article>(e => e.ComplaintId) // Aici este specificată coloana cheii străine.
-            .HasPrincipalKey<Complaint>(e => e.ArticleId) // Aici se specifică cheia referențiată în tabela referențiată.
-            .OnDelete(DeleteBehavior.Cascade); // Aici se specifică comportamentul de ștergere atunci când entitatea referențiată este eliminată.
     }
 }

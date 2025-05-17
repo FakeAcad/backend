@@ -199,7 +199,6 @@ public static class WebApplicationBuilderExtensions
             .AddScoped<IUserService, UserService>()
             .AddScoped<IMailService, MailService>()
             .AddTransient<IArticleService, ArticleService>()
-            .AddTransient<IComplaintService, ComplaintService>()
             .AddTransient<IProfessorService, ProfessorService>()
             .AddTransient<IUniversityService, UniversityService>();
 
@@ -252,7 +251,7 @@ public static class WebApplicationBuilderExtensions
             client.BaseAddress = new Uri(baseUrl);
         });
 
-        builder.Services.AddHttpClient<ComplaintHttpClient>(client =>
+        builder.Services.AddHttpClient<LoginHttpClient>(client =>
         {
             client.BaseAddress = new Uri(baseUrl);
         });
